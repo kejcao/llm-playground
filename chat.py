@@ -15,7 +15,13 @@ class ChatBot:
         with redirect_stderr(StringIO()):  # to block llama.cpp output
             self.llm = Llama(model_path=fp, n_ctx=2048, seed=20)
 
-        self.settings = kwargs
+        self.settings = {
+            'temperature': 1.2,
+            'top_k': 40,
+            'top_p': 0.95,
+            'repeat_penalty': 1.1,
+        } | kwargs
+
         self.prompt = SYSTEM[0] + system + SYSTEM[1]
         for a, b in initial:
             self.prompt += USER[0] + a + USER[1] + ASSISTANT[0] + b + ASSISTANT[1]
@@ -40,10 +46,6 @@ class ChatBot:
                     max_tokens=512,
                     stop=[ASSISTANT[1]],
                     stream=True,
-                    temperature=1.2,
-                    top_k=40,
-                    top_p=0.95,
-                    repeat_penalty=1.1,
                     **self.settings,
                 ):
                     yield (tok := result['choices'][0]['text'])
@@ -62,8 +64,8 @@ bot = ChatBot(
 )
 
 # bot = ChatBot(
-#     '/home/kjc/Downloads/Meta-Llama-3-8B-Instruct.Q5_K_M.gguf',
-#     "You are a helpful AI assistant. No yapping.", temperature=4.0
+#     '/home/kjc/Downloads/Llama-3-8B-Instruct-abliterated-v2_q5.gguf',
+#     'You are a helpful AI assistant. No yapping.'
 # )
 
 while True:
