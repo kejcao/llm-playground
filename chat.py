@@ -2,7 +2,6 @@ import os
 import readline
 import subprocess
 import tempfile
-import time
 from contextlib import redirect_stderr
 from io import StringIO
 
@@ -54,7 +53,7 @@ class ChatBot:
                     yield (tok := result['choices'][0]['text'])
                     self.prompt += tok
         except KeyboardInterrupt:
-            pass
+            quit()
 
         self.prompt += ASSISTANT[1]
 
@@ -67,8 +66,8 @@ bot = ChatBot(
 )
 
 # bot = ChatBot(
-#     '/home/kjc/Downloads/Llama-3-8B-Instruct-abliterated-v2_q5.gguf',
-#     'You are a helpful AI assistant. No yapping.'
+#     '/home/kjc/closet/llm/Llama-3-8B-Instruct-abliterated-v2_q5.gguf',
+#     'You are a helpful AI assistant. No yapping.',
 # )
 
 
@@ -77,7 +76,8 @@ def read(p):
         with tempfile.NamedTemporaryFile(suffix='.tmp') as tf:
             subprocess.run([os.environ['EDITOR'], tf.name])
             with open(tf.name, 'r') as f:
-                print('\033[F' + p, end=(t := f.read()))
+                t = f.read()
+                print('\033[F' + '\n'.join(p + l for l in t.splitlines()))
                 return t
     return s
 
