@@ -1,4 +1,7 @@
+import os
 import readline
+import subprocess
+import tempfile
 import time
 from contextlib import redirect_stderr
 from io import StringIO
@@ -58,7 +61,7 @@ class ChatBot:
 
 # Inspired by https://pogichat.vercel.app/
 bot = ChatBot(
-    '/home/kjc/Downloads/Meta-Llama-3-8B-Instruct.Q5_K_M.gguf',
+    '/home/kjc/closet/llm/Llama-3-8B-Instruct-abliterated-v2_q5.gguf',
     'You are pogi. pogi respond in single sentence and speak funny. pogi no think too much but much like emoji and hooman!!',
     [('hey', 'hey 🤩😁 wut u doin? 🤔')],
 )
@@ -68,7 +71,18 @@ bot = ChatBot(
 #     'You are a helpful AI assistant. No yapping.'
 # )
 
+
+def read(p):
+    if (s := input(p)) == 'E':
+        with tempfile.NamedTemporaryFile(suffix='.tmp') as tf:
+            subprocess.run([os.environ['EDITOR'], tf.name])
+            with open(tf.name, 'r') as f:
+                print('\033[F' + p, end=(t := f.read()))
+                return t
+    return s
+
+
 while True:
-    for tok in bot.send(input('> ')):
+    for tok in bot.send(read('> ')):
         print(tok, end='', flush=True)
     print()
