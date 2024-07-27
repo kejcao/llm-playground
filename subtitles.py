@@ -9,7 +9,7 @@ from pathlib import Path
 def convert(vtt):
     def is_timestamp(line):
         return re.search(
-            r'\d{2}:\d{2}:\d{2}\.\d{3} --> \d{2}:\d{2}:\d{2}\.\d{3} align:start position:0%',
+            r'\d{2}:\d{2}:\d{2}\.\d{3} --> \d{2}:\d{2}:\d{2}\.\d{3}',
             line,
         )
 
@@ -25,6 +25,7 @@ def convert(vtt):
         else:
             l = l.strip()
             if l:
+                l = l.replace('&nbsp;', '')
                 raw.append(re.sub(r'(<.*?>)', '', l) + '\n')
 
     return ''.join(x[0] for x in groupby(raw))
@@ -48,4 +49,7 @@ def get_subtitles(url):
         return convert(next(Path(d).glob('*.vtt')).read_text())
 
 
-# print(get_subtitles('https://www.youtube.com/watch?v=Iow92wFKp-w'))
+if __name__ == '__main__':
+    import sys
+
+    print(get_subtitles(sys.argv[-1]))
